@@ -35,6 +35,38 @@ function Dashboard() {
     return matchesBucket && matchesSearch;
   });
 
+  const bucketStats={
+  All: {
+    count: invoices.length,
+    outstanding: invoices.reduce(
+      (sum, i) => sum + Number(i.outstanding),
+      0
+    ),
+  },
+};
+
+[
+  "Not Due",
+  "0-15",
+  "16-30",
+  "31-60",
+  "61-90",
+  "90+",
+  "No-Due-Date-Given",
+].forEach((bucketName) => {
+  const bucketInvoices = invoices.filter(
+    (i) => i.bucket === bucketName
+  );
+
+  bucketStats[bucketName] = {
+    count: bucketInvoices.length,
+    outstanding: bucketInvoices.reduce(
+      (sum, i) => sum + Number(i.outstanding),
+      0
+    ),
+  };
+});
+
   return (
     <div className="min-h-screen bg-slate-100">
       <Navbar />
@@ -50,6 +82,7 @@ function Dashboard() {
         <BucketTabs
           active={bucket}
           setActive={setBucket}
+          bucketStats={bucketStats}
         />
 
         <StatCards invoices={filteredInvoices} />
