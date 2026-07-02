@@ -1,6 +1,6 @@
 import {
-  format_weekly_payment,
-  format_weekly_collection,
+  format_weekly_payment_summary,
+  format_weekly_collection_summary,
 } from "../services/whatsappFormatter.js";
 
 import {
@@ -15,14 +15,14 @@ const weekly_payment_schedule=async(req,res)=>{
     const report=await get_weekly_payment_schedule(
       req.params.customer
     );
-    const message=format_weekly_payment(report);
 
+    const message=format_weekly_payment_summary(report);
 
-    // res.status(200).json({
-    //   success:true,
-    //   report,
-    // });
-    res.json({message})
+    res.status(200).json({
+      success:true,
+      report,
+      message,
+    });
 
   }
 
@@ -45,9 +45,13 @@ const weekly_collection_followup=async(req,res)=>{
       req.params.customer
     );
 
-    const message=format_weekly_collection(report);
+    const message=format_weekly_collection_summary(report);
 
-    res.send(`<pre>${message}</pre>`);
+    res.status(200).json({
+      success:true,
+      report,
+      message,
+    });
 
   }
 
@@ -62,4 +66,7 @@ const weekly_collection_followup=async(req,res)=>{
 
 };
 
-export {weekly_payment_schedule,weekly_collection_followup};
+export{
+  weekly_payment_schedule,
+  weekly_collection_followup,
+};
