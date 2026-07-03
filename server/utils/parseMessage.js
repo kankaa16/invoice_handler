@@ -54,22 +54,25 @@ const parse_message=async(message)=>{
   const normalized_message=normalize(message);
 
   //direct match found
-  for(const customer of customers){
+  for (const customer of customers) {
 
-    const name=normalize(customer);
+  const name = normalize(customer);
 
-    const words=name.split(" ");
+  const words = normalized_message.split(" ");
 
-    if(words.some(word=>word.length>=3 && normalized_message.includes(word))){
-
-      return{
-        intent,
-        customer,
-      };
-
-    }
-
+  if (
+    words.some(word =>
+      word.length >= 3 &&
+      name.split(" ").includes(word)
+    )
+  ) {
+    return {
+      intent,
+      customer,
+    };
   }
+
+}
 
 //fallback for fuse
   const indexed=customers.map(customer=>({
@@ -79,7 +82,7 @@ const parse_message=async(message)=>{
 
   const fuse=new Fuse(indexed,{
     keys:["normalized"],
-    threshold:0.5,
+    threshold:0.25,
     ignoreLocation:true,
   });
 
