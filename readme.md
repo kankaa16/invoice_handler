@@ -182,6 +182,50 @@ TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
 ```
 
 ---
+## ngrok Setup
+
+1. Start the backend server.
+
+```bash
+cd server
+npm run dev
+```
+
+2. Start ngrok.
+
+```bash
+ngrok http 5010
+```
+
+3. Copy the generated forwarding URL.
+
+Example:
+
+```
+https://punctuate-dipping-choice.ngrok-free.dev
+```
+
+4. In the Twilio WhatsApp Sandbox, set the **WHEN A MESSAGE COMES IN** webhook to:
+
+```
+https://<your-ngrok-url>/api/whatsapp
+```
+
+Method:
+
+```
+POST
+```
+
+5. Send a WhatsApp message to the Twilio Sandbox number. If configured correctly, ngrok will log:
+
+```
+POST /api/whatsapp   200 OK
+```
+
+> **Note:** On the free ngrok plan, the public URL changes every time a new tunnel is started. Pls update the Twilio webhook accordingly.
+
+---
 
 ## WhatsApp Setup
 
@@ -199,7 +243,7 @@ ngrok http 5010
 
 ```
 POST
-
+(eg:https://punctuate-dipping-choice.ngrok-free.dev/api.whatsapp)
 https://<ngrok-url>/api/whatsapp
 ```
 
