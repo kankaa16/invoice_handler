@@ -1,11 +1,11 @@
 import Invoice from "../models/Invoice.js";
 import {getBucket} from "../utils/bucket.js";
 
-const getInvoices=async(req, res)=>{
+const getInvoices=async(req,res)=>{
   try{
     const invoices=await Invoice.find();
     const due=invoices.map((invoice)=>({
-        ...invoice.toObject(),
+        ...invoice.toObject(), 
         bucket:getBucket(invoice.dueDate)
     }))
 
