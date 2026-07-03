@@ -12,20 +12,14 @@ import {
   format_weekly_collection_invoices,
 } from "../services/whatsappFormatter.js";
 
-
+import parse_message from "../utils/parseMessage.js";
 
 const whatsapp_webhook=async(req,res)=>{
 
-    const client=twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-
-console.log(process.env.TWILIO_ACCOUNT_SID);
-  console.log(process.env.TWILIO_AUTH_TOKEN ? "AUTH TOKEN FOUND" : "AUTH TOKEN MISSING");
-
-  console.log("===== WEBHOOK HIT =====");
-  console.log(req.body);
+  const client=twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
 
   try{
 
@@ -40,16 +34,12 @@ console.log(process.env.TWILIO_ACCOUNT_SID);
 
     }
 
-    const lower=incoming.toLowerCase();
+    const {intent,customer}=await parse_message(incoming);
 
     let summary="";
     let invoices="";
 
-    if(lower.includes("weekly payment schedule")){
-
-      const customer=incoming
-        .replace(/give me a weekly payment schedule for/i,"")
-        .trim();
+    if(intent==="payment"){
 
       const report=await get_weekly_payment_schedule(customer);
 
@@ -59,11 +49,7 @@ console.log(process.env.TWILIO_ACCOUNT_SID);
 
     }
 
-    else if(lower.includes("weekly collection follow-up")){
-
-      const customer=incoming
-        .replace(/give me a weekly collection follow-up for/i,"")
-        .trim();
+    else if(intent==="collection"){
 
       const report=await get_weekly_collection_followup(customer);
 
@@ -75,29 +61,39 @@ console.log(process.env.TWILIO_ACCOUNT_SID);
 
     else{
 
-      summary=`Supported commands:
+      summary=`Sorry, I couldn't understand your request.
 
-Give me a weekly payment schedule for <customer>
+Examples:
 
-Give me a weekly collection follow-up for <customer>`;
+• Payment schedule for Alpha
+
+• Outstanding for Beta
+
+• Collection follow up for Gamma`;
 
     }
 
     await client.messages.create({
+
       from:process.env.TWILIO_WHATSAPP_NUMBER,
+
       to:req.body.From,
+
       body:summary,
+
     });
 
     if(invoices){
 
       await client.messages.create({
-        from:process.env.TWILIO_WHATSAPP_NUMBER,
-        to:req.body.From,
-        body:invoices,
-      });
 
-    }
+      from:process.env.TWILIO_WHATSAPP_NUMBER,
+      to:req.body.From,
+      body:invoices,
+
+    });
+
+  }
 
     res.type("text/xml");
 
@@ -111,9 +107,13 @@ Give me a weekly collection follow-up for <customer>`;
     console.error(err);
 
     await client.messages.create({
+
       from:process.env.TWILIO_WHATSAPP_NUMBER,
+
       to:req.body.From,
+
       body:err.message,
+
     });
 
     res.type("text/xml");

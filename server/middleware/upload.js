@@ -16,7 +16,7 @@ const storage=multer.diskStorage({
 
 const fileFilter=(req, file, cb) => {
   if (
-    //this is official mimetype for excel ofc
+    //this is official mimetype for excel
     file.mimetype ===
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
     file.originalname.endsWith(".xlsx")

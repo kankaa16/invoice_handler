@@ -1,17 +1,11 @@
-import {
-  format_weekly_payment_summary,
-  format_weekly_collection_summary,
-} from "../services/whatsappFormatter.js";
+import{format_weekly_payment_summary,format_weekly_collection_summary} from "../services/whatsappFormatter.js";
 
-import {
-  get_weekly_payment_schedule,
-  get_weekly_collection_followup,
-} from "../services/reportService.js";
+import{get_weekly_payment_schedule,get_weekly_collection_followup}from "../services/reportService.js";
 
 const weekly_payment_schedule=async(req,res)=>{
 
   try{
-
+    
     const report=await get_weekly_payment_schedule(
       req.params.customer
     );
